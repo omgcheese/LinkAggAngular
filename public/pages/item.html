@@ -1,0 +1,10 @@
+<div class="col-md-4" ng-repeat="post in webpostsResult">
+    <div class="item">
+        <img class="content" src="../../public/images/test.png">
+        <p class="summary">
+            {{post.postTitle}} <br>
+            (source: {{post.postOrigin}})<br>
+            <a href="{{post.commentLink}}">Comment</a>
+        </p>            
+    </div>
+</div>
