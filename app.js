@@ -11,29 +11,16 @@ linkAgg.config(['$routeProvider', function($routeProvider) {
     //add more router Provider in the future
 }]);
 
-//SERVICE
-linkAgg.service("webpostcrawl", function($http, $q) {
-   var deferred = $q.defer();
-    $http.get("https://calm-springs-9697.herokuapp.com/database/reddit/20151202").then(function (data) {
-        deferred.resolve(data);
-    });
-    
-    this.getWebposts= function() {
-        return deferred.promise;
-    }
-});
 
 //CONTROLLER
-linkAgg.controller("homeController", ['$scope','webpostcrawl', function($scope, webpostcrawl) {
+linkAgg.controller("homeController", ['$scope','$resource', function($scope, $resource) {
     
-   var promise = webpostcrawl.getWebposts();
+    $scope.webPostAPI = $resource("https://calm-springs-9697.herokuapp.com/database/:source");
     
-    promise.then(function (data) {
-        $scope.webpostsResult = data.data;
-        console.log($scope.webpostsResult);
-    });
-    
-   
+    $scope.webpostsResult = $scope.webPostAPI.get({source:'postman', 
+                                                   cnt: 12});
+    //default post number request is 12
+    //as you move down, you should define how many more you are requesting...
     
 }]);
 
