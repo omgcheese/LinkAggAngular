@@ -22,8 +22,9 @@ linkAgg.controller("homeController", ['$scope','$resource', function($scope, $re
     //default post number request is 12
     //as you move down, you should define how many more you are requesting...
     
+    $scope.windowScreenTop = $(".container").scrollTop();
+    console.log($scope.windowScreenTop);
 }]);
-
 
 
 
