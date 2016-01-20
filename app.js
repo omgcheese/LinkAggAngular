@@ -36,7 +36,7 @@ linkAgg.factory("apiGet", ['$resource','apiLogin', function($resource, apiLogin)
                 var result = $resource("https://calm-springs-9697.herokuapp.com/api/:source/:date",{
                             source: 'reddit',
                             date: 20160120,
-                            ctn: 12
+                            cnt: 12
                         },{
                             get: {
                                 method: 'GET',
