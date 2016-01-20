@@ -11,49 +11,50 @@ linkAgg.config(['$routeProvider', function($routeProvider) {
     //add more router Provider in the future
 }]);
 
-
-//CONTROLLER
-linkAgg.controller("homeController", ['$scope','$http','$resource', function($scope, $http, $resource) {
-    
-    $http.post("https://calm-springs-9697.herokuapp.com/login", {
-        userID: "admin",
-        password: "admin123"},{
-        headers: {
-            'Content-Type': "application/json"            
-        }
-    }).then(function(response) {
-        console.log(response.data.token);
-        $scope.webpostsResult = $resource("https://calm-springs-9697.herokuapp.com/api/:source/:date",{
-            source: 'reddit',
-            date: 20160118,
-            ctn: 12
-        },{
-            get: {
-                method: 'GET',
-                headers: {
-                    'Content-Type': "application/json",
-                    'Authorization': "Bearer " + response.data.token
-                }
+//FACTORY: API LOGIN
+linkAgg.factory("apiLogin", ["$http", function($http) {
+    return function(callback) {
+        $http.post("https://calm-springs-9697.herokuapp.com/login", {
+            userID: "admin",
+            password: "admin123"},{
+            headers: {
+                'Content-Type': "application/json"            
             }
-        })
-            .get(function() {
-            console.log("everything is loaded!");
-        })
-    }, function() {
-        console.log("Login not successful!");
-    });
-    
-//    $scope.webPostAPI = $resource("https://calm-springs-9697.herokuapp.com/api/:source/:date");
-//    
-//    $scope.webpostsResult = $scope.webPostAPI.get({source:'reddit',
-//                                                   date: 20160118
-//                                                   cnt: 12});
-    //default post number request is 12
-    //as you move down, you should define how many more you are requesting...
-    
-    $scope.windowScreenTop = $(".container").scrollTop();
-    console.log($scope.windowScreenTop);
+            }).then(function(res) {
+            callback(res);
+        }, function() {
+            console.error("Login not successful");
+        });
+    };
 }]);
 
+//FACTORY: API GET
+linkAgg.factory("apiGet", ['$resource','apiLogin', function($resource, apiLogin) { 
+    return {
+        get: function(callback) {
+            apiLogin(function(response){
+                var result = $resource("https://calm-springs-9697.herokuapp.com/api/:source/:date",{
+                            source: 'reddit',
+                            date: 20160120,
+                            ctn: 12
+                        },{
+                            get: {
+                                method: 'GET',
+                                headers: {
+                                    'Content-Type': "application/json",
+                                    'Authorization': "Bearer " + response.data.token
+                                }
+                            }
+                        }).get();
+                callback(result);
+            });
+        }
+    };
+}]);
 
-
+//CONTROLLER
+linkAgg.controller("homeController", ['$scope', 'apiGet', function($scope, apiGet) {
+    apiGet.get(function(data) {
+        $scope.webpostsResult = data;
+    })
+}]);
