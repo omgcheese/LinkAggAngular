@@ -52,9 +52,40 @@ linkAgg.factory("apiGet", ['$resource','apiLogin', function($resource, apiLogin)
     };
 }]);
 
-//CONTROLLER
+
+//CONTROLLER: HOME
 linkAgg.controller("homeController", ['$scope', 'apiGet', function($scope, apiGet) {
     apiGet.get(function(data) {
         $scope.webpostsResult = data;
-    })
+    }); 
 }]);
+
+//DIRECTIVE: MORE DATA
+linkAgg.directive('webPost', ['$document','$window', 'apiGet', function($document, $window, apiGet) {
+    return {
+        link: function(scope, element, attr) {
+            angular.element($window).bind("scroll", function() {
+                var windowHeight = "innerHeight" in window ? window.innerHeight : document.documentElement.offsetHeight;
+                var body = document.body;
+                var html = document.documentElement;
+                var docHeight = Math.max(body.scrollHeight,body.offsetHeight, html.clientHeight, html.scrollHeight, html.offsetHeight);
+                var windowBottom = windowHeight + window.pageYOffset;
+                if (windowBottom >= docHeight) {
+                    apiGet.get(function(data) {
+                        data.$promise.then(function(webposts) {
+                            for(var key in webposts.list) {
+                                var postAtt = angular.element('<div class="col-md-4"><div class="item"><img class="content" src="../../public/images/test.png"><p class="summary">' + webposts.list[key].postTitle + '<br>(source: ' + webposts.list[key].postOrigin + ')<br><a href= "'+webposts.list[key].commentLink+'" >Comment</a></p></div></div>');
+                                element.prepend(postAtt);
+                            }         
+                        });
+                    });
+                }
+            });
+        },
+        scope: { 
+        },
+        replace: false
+    }
+        
+}]);
+
