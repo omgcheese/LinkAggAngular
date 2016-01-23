@@ -63,18 +63,24 @@ linkAgg.controller("homeController", ['$scope', 'apiGet', function($scope, apiGe
 //DIRECTIVE: MORE DATA
 linkAgg.directive('webPost', ['$document','$window', 'apiGet', function($document, $window, apiGet) {
     return {
+        //Link directive functions that manipulates DOM elements
         link: function(scope, element, attr) {
+            
+            //Checking if user has reached bottom page
             angular.element($window).bind("scroll", function() {
                 var windowHeight = "innerHeight" in window ? window.innerHeight : document.documentElement.offsetHeight;
                 var body = document.body;
                 var html = document.documentElement;
                 var docHeight = Math.max(body.scrollHeight,body.offsetHeight, html.clientHeight, html.scrollHeight, html.offsetHeight);
                 var windowBottom = windowHeight + window.pageYOffset;
+                //when reached to bottom call apiGet function
                 if (windowBottom >= docHeight) {
                     apiGet.get(function(data) {
                         data.$promise.then(function(webposts) {
                             for(var key in webposts.list) {
+                                //Add more data
                                 var postAtt = angular.element('<div class="col-md-4"><div class="item"><img class="content" src="../../public/images/test.png"><p class="summary">' + webposts.list[key].postTitle + '<br>(source: ' + webposts.list[key].postOrigin + ')<br><a href= "'+webposts.list[key].commentLink+'" >Comment</a></p></div></div>');
+                                //add before directive tag so you can add more
                                 element.prepend(postAtt);
                             }         
                         });

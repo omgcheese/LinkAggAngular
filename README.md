@@ -2,6 +2,7 @@
 
 ## To do
 <ul>
+<li> Data cursor to load proper web posts</li>
 <li> Customize NavBar </li>
 <li> Fixed image sets for source origin unless it's image link </li>
 <li> Website icon </li>
